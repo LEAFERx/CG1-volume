@@ -1,0 +1,14 @@
+﻿  main.cpp
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\head\aabb.hpp(56,18): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\head\aabb.hpp(57,18): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\head\aabb.hpp(58,18): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\head\light.hpp(35,1): warning C4305: “初始化”: 从“double”到“float”截断
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\head\film.hpp(7,54): warning C4244: “初始化”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\include\tinycolormap.hpp(39,36): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\include\tinycolormap.hpp(93,36): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\include\tinycolormap.hpp(1575,36): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\src\main.cpp(86,1): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(1774): message : 参见“sprintf”的声明
+D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\src\main.cpp(90,1): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(1774): message : 参见“sprintf”的声明
+  volume_rendering.vcxproj -> D:\Study\Computer Graphics I\Assignments\cs171-assignment5-LEAFERx\build\Release\volume_rendering.exe

@@ -1,0 +1,10 @@
+^D:\STUDY\COMPUTER GRAPHICS I\ASSIGNMENTS\CS171-ASSIGNMENT5-LEAFERX\BUILD\CMAKEFILES\EEF6DDE753EC5A6B13E694396B968FA6\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/Study/Computer Graphics I/Assignments/cs171-assignment5-LEAFERx" "-BD:/Study/Computer Graphics I/Assignments/cs171-assignment5-LEAFERx/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "D:/Study/Computer Graphics I/Assignments/cs171-assignment5-LEAFERx/build/volume_rendering.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
