@@ -36,25 +36,190 @@ In this assignment, I have implemented the requirements, including:
 
 \section{Implementation Details}
 
-
 \subsection{Volume Preprocessing}
+
+During volume preprocessing, the gradient of the volume is calculated and stored. In this assignment, I use central difference to calculate the gradient.
+
+First, if the target volume is at the boundary (whether x, y, z), I simply use its inner neighbor's gradient as its gradient.
+
+Then for a volume data at index $(x, y, z)$, marked as $v_{x, y, z}$, the gradient is calculated as:
+
+\[
+	\begin{split}
+		grad(v_{x, y, z})_x &= \dfrac{den(v_{x+1, y, z}) - den(v_{x-1, y, z})}{||pos(v_{x+1, y, z}) - pos(v_{x-1, y, z})||} \\
+		grad(v_{x, y, z})_y &= \dfrac{den(v_{x, y+1, z}) - den(v_{x, y-1, z})}{||pos(v_{x, y+1, z}) - pos(v_{x, y-1, z})||} \\
+		grad(v_{x, y, z})_z &= \dfrac{den(v_{x, y, z+1}) - den(v_{x, y, z-1})}{||pos(v_{x, y, z+1}) - pos(v_{x, y, z-1})||}
+	\end{split} 
+\]
+
+where $grad(\cdot)$ means gradient, $den(\cdot)$ means density, $pos(\cdot)$ means position.
+
 \subsection{Interpolator}
+
+I implemented 2 interpolators: Nearest Neighbor Interpolator and Trilinear Interpolator.
+
+\subsubsection{Nearest Neighbor Interpolator}
+
+The implementation is very simple. Just compare the position to the eight volume position in the voxel, and use the density and the gradient of the closet volume data.
+
+\subsubsection{Trilinear Interpolator}
+
+Let the interpolated position to be $p$, the 8 volume data in the voxel be $c_{000}$ to $c_{111}$. Assume we interpolate value $t$.
+
+Let
+
+\[
+	\begin{split}
+		x_d &= \dfrac{p.x - c_{000}.x}{c_{100}.x - c_{000}.x} \\
+		y_d &= \dfrac{p.y - c_{000}.y}{c_{010}.y - c_{000}.y} \\
+		z_d &= \dfrac{p.z - c_{000}.z}{c_{001}.z - c_{000}.z}
+	\end{split}
+\]
+
+First we interpolate along x axis.
+
+\[
+	\begin{split}
+		t_{00} = c_{000}.t (1 - x_d) + c_{100} x_d \\
+		t_{01} = c_{001}.t (1 - x_d) + c_{101} x_d \\
+		t_{10} = c_{010}.t (1 - x_d) + c_{110} x_d \\
+		t_{11} = c_{011}.t (1 - x_d) + c_{111} x_d \\
+	\end{split}
+\]
+
+Then we interpolate along y axis.
+
+\[
+	\begin{split}
+		t_0 = t_{00} (1 - y_d) + t_{10} y_d \\
+		t_1 = t_{01} (1 - y_d) + t_{11} y_d \\
+	\end{split}
+\]
+
+Then we interpolate along z axis to get the final interpolated value $t$.
+
+\[
+	t = t_0 (1 - z_d) + t_1
+\]
+
 \subsection{Classifier}
+
+First I use \textbf{tinycolormap} to map density value to color. Then I do local Phong shading.
+
+The normal used in the Phong shading is the normalized gradient. The ambient is set to $(0.05, 0.05, 0.05)$.
+
+The diffuse and specular calculation is very similar to the previous assignments.
+
+For the transfer function, I use the gradient norm to enhance the structure of the smoke.
+
+The output color is defined as:
+
+\[
+	color = G \cdot PhongResult \cdot dt \cdot density \cdot (1 + \gamma \cdot \dfrac{||gradient||}{MaxGradientNorm})
+\]
+
+Where $G$ is to amplify the color and is set to $5$, $\gamma$ is the coefficient of gradient effect, and is set to $0.05$. $dt$ is the sampling step.
+
+The output transparency value (the transparency vector has same components)is defined as:
+
+\[
+	tran = e^{-density \cdot dt} \cdot (1 + \gamma \cdot \dfrac{||gradient||}{MaxGradientNorm})
+\]
+
+Where $\gamma$ is the coefficient of gradient effect, and is set to $0.05$. $dt$ is the sampling step.
+
 \subsection{Compositor}
+
+I implement two scheme of compositing: forward scheme and backward scheme.
+
+The forward scheme is implemented by:
+
+\[
+	\begin{split}
+		C_{dst} &= C_{dst} + (1 - \alpha_{dst})C_{src} \\
+		\alpha_{dst} &= \alpha_{dst} + (1 - \alpha_{dst})\alpha_{src}
+	\end{split}
+\]
+
+The backward scheme is implemented by:
+
+\[
+	C_{dst} = C_{src} + (1 - \alpha_{src})C_{dst}
+\]
+
 \subsection{Renderer (including Sampler)}
+
+The renderer is also simple. First generate rays from camera, and for each ray examine the intersection result. If the ray intersects with the volume, then it will have an entry point and an exit point, with ray parameters $t_{start}$ and $t_{end}$.
+
+Then we sample $t$ from $t_{start}$ to $t_{end}$ by a fixed step $dt$, which is set to $0.005$. For each sample, first use interpolator to interpolate the volume data, and then use classifier to generate optics data, then use compositor the blend the data.
+
 \subsection{Volumetric Shadow Implementation}
 
+The volumetric shadow is implemented in the renderer. It is implemented as follows: For each sampled position, shoot a ray to the light source, integral transmittance along the path, and then use the transmittance to effect the color.
+
+The discrete integral is performed as follows:
+
+\[
+	transmittance *= e^{-\kappa \cdot density \cdot dt}
+\]
+
+Where $\kappa$ is the coefficient and is set to $5$, $density$ is the sampled density and $dt$ is the \textbf{integral sampling} step length, which is set to $0.05$ for performance.
 
 \section{Results}
 
-\subsection{Effect of sampling times}
+\subsection{Base result}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[scale=0.2]{images/forward_pre.png}
-  \caption{PLACEHOLDER}
+  \caption{Forward, Trilinear}
   \label{fig:label}
 \end{figure}
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.2]{images/forward_preNN.png}
+  \caption{Forward, Nearest Neighbor}
+  \label{fig:label}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.2]{images/back_pre.png}
+  \caption{Backward, Trilinear}
+  \label{fig:label}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.2]{images/back_preNN.png}
+  \caption{Backward, Nearest Neighbor}
+  \label{fig:label}
+\end{figure}
+
+\subsection{Volumetric shadow comapre}
+
+To enhance the volumetric shadow effect, the light position is set to $(5, 0, 0)$.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.2]{images/forward_pre_loffset.png}
+  \caption{Without volumetric shadow}
+  \label{fig:label}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.2]{images/forward_pre_shadow_loffset.png}
+  \caption{With volumetric shadow}
+  \label{fig:label}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.2]{images/forward_pre_shadow_loffset_diff.png}
+  \caption{Difference between above two image}
+  \label{fig:label}
+\end{figure}
 
 \end{document}
